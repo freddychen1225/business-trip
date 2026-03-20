@@ -158,7 +158,7 @@
 
     #preview.show { display: block; }
 
-    /* PDF 表格：完全統一 1px 黑框、文字置中 */
+    /* PDF 表格：字體放大 */
     .preview-table {
       width: 100%;
       border-collapse: collapse;
@@ -168,8 +168,8 @@
 
     .preview-table td {
       border: 1px solid #000 !important;
-      padding: 4px;
-      font-size: 12px;
+      padding: 6px;        /* 稍微加大內距 */
+      font-size: 18px;     /* 其他字 18px */
       text-align: center;
       vertical-align: middle;
       word-break: break-all;
@@ -177,15 +177,21 @@
     }
 
     .preview-company {
-      font-size: 24px !important;
+      font-size: 36px !important;  /* 公司名 36px */
       font-weight: bold;
       text-align: center;
     }
 
     .preview-header {
-      font-size: 20px !important;
+      font-size: 30px !important;  /* 標題 30px */
       font-weight: bold;
       text-align: center;
+    }
+
+    /* 小計和總計行加粗 */
+    .preview-table .summary-row td {
+      font-weight: bold;
+      font-size: 20px;
     }
   </style>
 </head>
@@ -201,7 +207,7 @@
   <div class="row">
     <div class="form-group">
       <label>申請日期（民國年）</label>
-      <input type="number" id="applyYear" />
+      <input type="number" id="applyYear" value="115" />
     </div>
     <div class="form-group">
       <label>月</label>
@@ -216,7 +222,7 @@
   <div class="row">
     <div class="form-group">
       <label>出差開始日期（民國年）</label>
-      <input type="number" id="startYear" />
+      <input type="number" id="startYear" value="115" />
     </div>
     <div class="form-group">
       <label>月</label>
@@ -231,7 +237,7 @@
   <div class="row">
     <div class="form-group">
       <label>出差結束日期（民國年）</label>
-      <input type="number" id="endYear" />
+      <input type="number" id="endYear" value="115" />
     </div>
     <div class="form-group">
       <label>月</label>
@@ -281,6 +287,15 @@
 
 <script>
   let tripItemCount = 0;
+
+  // 頁面載入時自動填入民國年
+  window.onload = function() {
+    const currentYear = new Date().getFullYear() - 1911;
+    document.getElementById('applyYear').value = currentYear;
+    document.getElementById('startYear').value = currentYear;
+    document.getElementById('endYear').value = currentYear;
+    addTripItem(); // 預設一筆明細
+  };
 
   function addTripItem() {
     tripItemCount++;
@@ -463,7 +478,7 @@
           <td colspan="2">出 差 事 由</td>
           <td colspan="7">${reason}</td>
         </tr>
-        <!-- ✅ 修正表頭：完全跟 Excel 一樣的結構 -->
+        <!-- 表頭 -->
         <tr>
           <td colspan="2">日　　期</td>
           <td>出發地</td>
@@ -484,13 +499,15 @@
           <td>金額</td>
         </tr>
         ${tripRows}
-        <tr>
+        <!-- ✅ 紅框1：各品項小計跨4格置中 -->
+        <tr class="summary-row">
           <td colspan="4">各品項小計</td>
           <td colspan="2">${tTotal}</td>
           <td>${mTotal}</td>
           <td colspan="2">${oTotal}</td>
         </tr>
-        <tr>
+        <!-- ✅ 紅框2：金額總合計跨4格置中 -->
+        <tr class="summary-row">
           <td colspan="4">金額總合計</td>
           <td colspan="5">${gTotal}</td>
         </tr>
@@ -557,9 +574,6 @@
         .save();
     }, 300);
   }
-
-  // 預設一筆明細
-  addTripItem();
 </script>
 </body>
 </html>
