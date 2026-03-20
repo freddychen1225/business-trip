@@ -152,7 +152,7 @@
     }
     .preview-table td {
       border: 1px solid #000 !important;
-      padding: 4px;
+      padding: 6px;
       font-size: 18px !important;  /* 其他字體改為18px */
       text-align: center;
       vertical-align: middle;
@@ -255,27 +255,23 @@
   <script>
     let tripItemCount = 0;
 
-    // 設定預設日期為今天 (民國年)
+    // 設定預設日期為今天 (民國年) - 只填入年份，月份和日期留白
     function setDefaultDates() {
       const today = new Date();
       const year = today.getFullYear() - 1911;  // 轉換為民國年
-      const month = today.getMonth() + 1;
-      const day = today.getDate();
 
-      // 設定申請日期
+      // 只設定年份欄位，月份和日期留白讓使用者自行填寫
       document.getElementById('applyYear').value = year;
-      document.getElementById('applyMonth').value = month;
-      document.getElementById('applyDay').value = day;
-
-      // 設定出差開始日期
       document.getElementById('startYear').value = year;
-      document.getElementById('startMonth').value = month;
-      document.getElementById('startDay').value = day;
-
-      // 設定出差結束日期
       document.getElementById('endYear').value = year;
-      document.getElementById('endMonth').value = month;
-      document.getElementById('endDay').value = day;
+      
+      // 月份和日期留白（不設定值）
+      document.getElementById('applyMonth').value = '';
+      document.getElementById('applyDay').value = '';
+      document.getElementById('startMonth').value = '';
+      document.getElementById('startDay').value = '';
+      document.getElementById('endMonth').value = '';
+      document.getElementById('endDay').value = '';
     }
 
     function addTripItem() {
@@ -536,7 +532,7 @@
       }, 300);
     }
 
-    // 設定預設日期
+    // 設定預設日期 - 只填入年份
     setDefaultDates();
 
     // 預設一筆明細
