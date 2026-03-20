@@ -31,7 +31,7 @@
     h1 {
       text-align: center;
       margin-bottom: 30px;
-      font-size: 22px; /* 只是畫面用，PDF 另行指定 */
+      font-size: 22px;
     }
 
     .form-group { margin-bottom: 16px; }
@@ -42,8 +42,7 @@
       font-size: 14px;
     }
 
-    input,
-    textarea {
+    input, textarea {
       width: 100%;
       padding: 8px 10px;
       border: 1px solid rgba(94, 82, 64, 0.2);
@@ -52,8 +51,7 @@
       font-family: inherit;
     }
 
-    input:focus,
-    textarea:focus {
+    input:focus, textarea:focus {
       outline: 2px solid #21808d;
       border-color: #21808d;
     }
@@ -151,7 +149,7 @@
 
     #preview {
       margin-top: 24px;
-      padding: 8px;        /* 減少留白，讓表格放大一些 */
+      padding: 8px;
       background: #fff;
       border: 1px solid rgba(94, 82, 64, 0.2);
       border-radius: 8px;
@@ -160,7 +158,7 @@
 
     #preview.show { display: block; }
 
-    /* PDF 表格：1px 黑框、文字置中、字級 12、微加粗提高清晰度 */
+    /* PDF 表格：完全統一 1px 黑框、文字置中 */
     .preview-table {
       width: 100%;
       border-collapse: collapse;
@@ -175,17 +173,17 @@
       text-align: center;
       vertical-align: middle;
       word-break: break-all;
-      font-weight: 600;  /* 整體微粗一點提高清晰度 */
+      font-weight: 600;
     }
 
     .preview-company {
-      font-size: 24px;
+      font-size: 24px !important;
       font-weight: bold;
       text-align: center;
     }
 
     .preview-header {
-      font-size: 20px;
+      font-size: 20px !important;
       font-weight: bold;
       text-align: center;
     }
@@ -465,33 +463,25 @@
           <td colspan="2">出 差 事 由</td>
           <td colspan="7">${reason}</td>
         </tr>
-        <!-- 表頭第一列 -->
+        <!-- ✅ 修正表頭：完全跟 Excel 一樣的結構 -->
         <tr>
-          <td colspan="2" rowspan="2">日　　期</td>
-          <td rowspan="2">出發地</td>
-          <td rowspan="2">目的地</td>
+          <td colspan="2">日　　期</td>
+          <td>出發地</td>
+          <td>目的地</td>
           <td colspan="2">交通費</td>
-          <td rowspan="2">膳雜費</td>
+          <td>膳雜費</td>
           <td colspan="2">其　他</td>
         </tr>
-        <!-- 表頭第二列 -->
-        <tr>
-          <td>公里數</td>
-          <td>金額</td>
-          <td>品項</td>
-          <td>金額</td>
-        </tr>
-        <!-- 第三列：日期下 月/日 + 膳雜費下 金額 -->
         <tr>
           <td>月</td>
           <td>日</td>
           <td></td>
           <td></td>
-          <td></td>
-          <td></td>
+          <td>公里數</td>
           <td>金額</td>
-          <td></td>
-          <td></td>
+          <td>金額</td>
+          <td>品項</td>
+          <td>金額</td>
         </tr>
         ${tripRows}
         <tr>
@@ -515,7 +505,7 @@
   }
 
   function generatePDF() {
-    previewPDF(); // 先更新 preview
+    previewPDF();
 
     const name = (document.getElementById("name").value || "").trim() || "未命名";
     const sy = parseInt(document.getElementById("startYear").value || 0);
@@ -525,7 +515,6 @@
     const em = parseInt(document.getElementById("endMonth").value || 0);
     const ed = parseInt(document.getElementById("endDay").value || 0);
 
-    // 檔名：同一天 → 20260319；多天 → 20260319~20
     let fileDatePart = "00000000";
     if (sy && sm && sd) {
       const startAD = sy + 1911;
@@ -546,7 +535,6 @@
       return;
     }
 
-    // 提高 scale 讓字更清晰
     setTimeout(() => {
       html2pdf()
         .set({
@@ -554,7 +542,7 @@
           filename,
           image: { type: "jpeg", quality: 1.0 },
           html2canvas: {
-            scale: 3,       // 若還覺得糊，可改 4
+            scale: 3,
             useCORS: true,
             letterRendering: true,
             scrollY: 0
