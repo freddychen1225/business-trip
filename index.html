@@ -31,7 +31,7 @@
     h1 {
       text-align: center;
       margin-bottom: 30px;
-      font-size: 22px; /* 只是畫面用，PDF 會另外指定 */
+      font-size: 22px; /* 只是畫面用，PDF 另行指定 */
     }
 
     .form-group { margin-bottom: 16px; }
@@ -151,7 +151,7 @@
 
     #preview {
       margin-top: 24px;
-      padding: 16px;
+      padding: 8px;        /* 減少留白，讓表格放大一些 */
       background: #fff;
       border: 1px solid rgba(94, 82, 64, 0.2);
       border-radius: 8px;
@@ -160,7 +160,7 @@
 
     #preview.show { display: block; }
 
-    /* PDF 表格：全部統一 1px 黑框、文字置中、字級 12 */
+    /* PDF 表格：1px 黑框、文字置中、字級 12、微加粗提高清晰度 */
     .preview-table {
       width: 100%;
       border-collapse: collapse;
@@ -169,12 +169,13 @@
     }
 
     .preview-table td {
-      border: 1px solid #000;
+      border: 1px solid #000 !important;
       padding: 4px;
       font-size: 12px;
       text-align: center;
       vertical-align: middle;
       word-break: break-all;
+      font-weight: 600;  /* 整體微粗一點提高清晰度 */
     }
 
     .preview-company {
@@ -286,6 +287,7 @@
   function addTripItem() {
     tripItemCount++;
     const container = document.getElementById("tripItems");
+    const defaultOtherItem = tripItemCount === 1 ? "過路費" : "";
     const itemDiv = document.createElement("div");
     itemDiv.className = "trip-item";
     itemDiv.id = `trip-${tripItemCount}`;
@@ -327,7 +329,7 @@
         </div>
         <div class="form-group">
           <label>其他-品項</label>
-          <input type="text" class="trip-other-item" onchange="calculateTotals()">
+          <input type="text" class="trip-other-item" value="${defaultOtherItem}" onchange="calculateTotals()">
         </div>
         <div class="form-group">
           <label>其他-金額</label>
@@ -469,17 +471,17 @@
           <td rowspan="2">出發地</td>
           <td rowspan="2">目的地</td>
           <td colspan="2">交通費</td>
-          <td colspan="1" rowspan="2">膳雜費</td>
+          <td rowspan="2">膳雜費</td>
           <td colspan="2">其　他</td>
         </tr>
-        <!-- 表頭第二列：公里數／金額／品項／金額 -->
+        <!-- 表頭第二列 -->
         <tr>
           <td>公里數</td>
           <td>金額</td>
           <td>品項</td>
           <td>金額</td>
         </tr>
-        <!-- 這一列：日期下方的 月／日 + 膳雜費下方的 金額，與上面那列同一欄位寬度 -->
+        <!-- 第三列：日期下 月/日 + 膳雜費下 金額 -->
         <tr>
           <td>月</td>
           <td>日</td>
@@ -519,13 +521,24 @@
     const sy = parseInt(document.getElementById("startYear").value || 0);
     const sm = parseInt(document.getElementById("startMonth").value || 0);
     const sd = parseInt(document.getElementById("startDay").value || 0);
+    const ey = parseInt(document.getElementById("endYear").value || 0);
+    const em = parseInt(document.getElementById("endMonth").value || 0);
+    const ed = parseInt(document.getElementById("endDay").value || 0);
 
-    let yyyymmdd = "00000000";
+    // 檔名：同一天 → 20260319；多天 → 20260319~20
+    let fileDatePart = "00000000";
     if (sy && sm && sd) {
-      const ad = sy + 1911;
-      yyyymmdd = `${ad}${String(sm).padStart(2, "0")}${String(sd).padStart(2, "0")}`;
+      const startAD = sy + 1911;
+      const startStr = `${startAD}${String(sm).padStart(2, "0")}${String(sd).padStart(2, "0")}`;
+      if (ey && em && ed && (sy !== ey || sm !== em || sd !== ed)) {
+        const endDayStr = String(ed).padStart(2, "0");
+        fileDatePart = `${startStr}~${endDayStr}`;
+      } else {
+        fileDatePart = startStr;
+      }
     }
-    const filename = `${yyyymmdd}差旅費申請表${name}.pdf`;
+
+    const filename = `${fileDatePart}差旅費申請表${name}.pdf`;
 
     const element = document.getElementById("preview");
     if (typeof html2pdf === "undefined") {
@@ -533,15 +546,15 @@
       return;
     }
 
-    // 提高 scale 讓字更清晰（相當於高解析度截圖）
+    // 提高 scale 讓字更清晰
     setTimeout(() => {
       html2pdf()
         .set({
           margin: 10,
           filename,
-          image: { type: "jpeg", quality: 0.98 },
+          image: { type: "jpeg", quality: 1.0 },
           html2canvas: {
-            scale: 3,       // 比預設 2 再高一點，字會更清楚
+            scale: 3,       // 若還覺得糊，可改 4
             useCORS: true,
             letterRendering: true,
             scrollY: 0
@@ -549,7 +562,7 @@
           jsPDF: {
             unit: "mm",
             format: "a4",
-            orientation: "portrait" // 直式
+            orientation: "portrait"
           }
         })
         .from(element)
