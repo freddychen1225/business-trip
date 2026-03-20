@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>差旅費申請表 - 久塑有限公司</title>
-    
-    <!-- html2pdf CDN（已移除 integrity 避免載入問題） -->
+
+    <!-- 只保留 html2pdf，一般情況就夠用 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    
+
     <style>
         :root {
             --color-background: #fcfcf9;
@@ -22,113 +22,189 @@
 
         body {
             font-family: 'Microsoft JhengHei', '微軟正黑體', Arial, sans-serif;
-            margin: 0; padding: 20px;
+            margin: 0;
+            padding: 20px;
             background: var(--color-background);
             color: var(--color-text);
         }
 
         .container {
-            max-width: 900px; margin: 0 auto;
+            max-width: 900px;
+            margin: 0 auto;
             background: var(--color-surface);
-            padding: 30px; border-radius: 12px;
+            padding: 30px;
+            border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.04);
         }
 
         h1 {
-            text-align: center; color: var(--color-text);
-            margin-bottom: 30px; font-size: 24px;
+            text-align: center;
+            color: var(--color-text);
+            margin-bottom: 30px;
+            font-size: 24px;
         }
 
         .form-group { margin-bottom: 20px; }
+
         label {
-            display: block; margin-bottom: 8px;
-            font-weight: 500; font-size: 14px;
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
         }
+
         input, textarea, select {
-            width: 100%; padding: 10px 12px;
+            width: 100%;
+            padding: 10px 12px;
             border: 1px solid var(--color-border);
-            border-radius: 8px; font-size: 14px;
-            font-family: inherit; background: var(--color-surface);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--color-surface);
             color: var(--color-text);
         }
+
         input:focus, textarea:focus, select:focus {
             outline: 2px solid var(--color-primary);
             border-color: var(--color-primary);
         }
 
-        .row { display: flex; gap: 15px; }
+        .row {
+            display: flex;
+            gap: 15px;
+        }
+
         .row .form-group { flex: 1; }
 
         .trip-item {
             background: rgba(94, 82, 64, 0.05);
-            padding: 15px; border-radius: 8px;
-            margin-bottom: 15px; border: 1px solid var(--color-border);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid var(--color-border);
         }
+
         .trip-item-header {
-            display: flex; justify-content: space-between;
-            align-items: center; margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
         }
-        .trip-item-title { font-weight: 600; font-size: 14px; }
+
+        .trip-item-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
 
         .btn {
-            padding: 10px 20px; border: none;
-            border-radius: 8px; font-size: 14px;
-            font-weight: 500; cursor: pointer;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
             transition: all 0.25s;
         }
-        .btn-primary { background: var(--color-primary); color: white; }
-        .btn-primary:hover { background: var(--color-primary-hover); }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+        }
+
         .btn-secondary {
             background: rgba(94, 82, 64, 0.12);
             color: var(--color-text);
         }
-        .btn-secondary:hover { background: rgba(94, 82, 64, 0.2); }
-        .btn-danger {
-            background: #c0152f; color: white;
-            padding: 6px 12px; font-size: 13px;
-        }
-        .btn-danger:hover { background: #a0122a; }
-        .btn-add { width: 100%; margin-top: 10px; }
 
-        .actions { display: flex; gap: 15px; margin-top: 30px; }
+        .btn-secondary:hover {
+            background: rgba(94, 82, 64, 0.2);
+        }
+
+        .btn-danger {
+            background: #c0152f;
+            color: white;
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .btn-danger:hover {
+            background: #a0122a;
+        }
+
+        .btn-add {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
 
         .summary {
             background: rgba(33, 128, 141, 0.08);
-            padding: 20px; border-radius: 8px; margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
         }
+
         .summary-row {
-            display: flex; justify-content: space-between;
-            padding: 8px 0; font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 15px;
         }
+
         .summary-row.total {
-            font-weight: 600; font-size: 18px;
+            font-weight: 600;
+            font-size: 18px;
             border-top: 2px solid var(--color-primary);
-            margin-top: 10px; padding-top: 15px;
+            margin-top: 10px;
+            padding-top: 15px;
         }
 
         #preview {
-            margin-top: 30px; padding: 30px;
-            background: white; border: 1px solid var(--color-border);
-            border-radius: 8px; display: none;
+            margin-top: 30px;
+            padding: 30px;
+            background: white;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            display: none;
         }
+
         #preview.show { display: block; }
 
         .preview-table {
-            width: 100%; border-collapse: collapse;
-            font-size: 12px; font-family: 'Microsoft JhengHei', sans-serif;
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            font-family: 'Microsoft JhengHei', '微軟正黑體', Arial, sans-serif;
             table-layout: fixed;
         }
+
         .preview-table td {
-            border: 1px solid #000; padding: 6px;
+            border: 1px solid #000;
+            padding: 6px;
             word-break: break-all;
         }
+
         .preview-company {
-            text-align: center; font-size: 20px;
-            font-weight: bold; padding: 10px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 10px;
         }
+
         .preview-header {
-            text-align: center; font-size: 18px;
-            font-weight: bold; padding: 10px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px;
         }
     </style>
 </head>
@@ -288,6 +364,7 @@
             }
         }
 
+        // 公里數變動 -> 自動計算交通費金額 = 公里數 * 7
         function onKmChange(input) {
             const item = input.closest('.trip-item');
             const km = parseFloat(input.value || 0);
@@ -312,6 +389,7 @@
             });
 
             const grandTotal = transportTotal + mealTotal + otherTotal;
+
             document.getElementById('transportTotal').textContent = transportTotal;
             document.getElementById('mealTotal').textContent = mealTotal;
             document.getElementById('otherTotal').textContent = otherTotal;
@@ -321,6 +399,7 @@
         function getTripData() {
             const items = document.querySelectorAll('.trip-item');
             const tripData = [];
+
             items.forEach(item => {
                 const month = item.querySelector('.trip-month')?.value || '';
                 const day = item.querySelector('.trip-day')?.value || '';
@@ -334,6 +413,7 @@
 
                 tripData.push({ month, day, from, to, km, transport, meal, otherItem, otherAmount });
             });
+
             return tripData;
         }
 
@@ -345,9 +425,7 @@
             const endMonth = parseInt(document.getElementById('endMonth').value || 0);
             const endDay = parseInt(document.getElementById('endDay').value || 0);
 
-            if (!startYear || !startMonth || !startDay || !endYear || !endMonth || !endDay) {
-                return 0;
-            }
+            if (!startYear || !startMonth || !startDay || !endYear || !endMonth || !endDay) return 0;
 
             const start = new Date(startYear + 1911, startMonth - 1, startDay);
             const end = new Date(endYear + 1911, endMonth - 1, endDay);
@@ -399,27 +477,30 @@
                 <table class="preview-table">
                     <tr><td colspan="9" class="preview-company">久塑有限公司</td></tr>
                     <tr><td colspan="9" class="preview-header">差旅費申請表</td></tr>
+
                     <tr>
-                        <td colspan="2" rowspan="1" style="text-align:center;border-top:2px solid #000;border-left:2px solid #000;border-right:1px solid #000;">姓名</td>
+                        <td colspan="2" style="text-align:center;border-top:2px solid #000;border-left:2px solid #000;">姓　　名</td>
                         <td colspan="3" style="border-top:2px solid #000;">${name}</td>
-                        <td colspan="2" rowspan="1" style="text-align:center;border-top:2px solid #000;">申請日期</td>
-                        <td colspan="2" style="border-top:2px solid #000;">　${applyYear}年　${applyMonth}月　${applyDay}日</td>
+                        <td colspan="2" style="text-align:center;border-top:2px solid #000;">申　請　日　期</td>
+                        <td colspan="2" style="border-top:2px solid #000;">${applyYear} 年 ${applyMonth} 月 ${applyDay} 日</td>
                     </tr>
                     <tr>
-                        <td colspan="2" style="text-align:center;border-left:2px solid #000;">出差日期</td>
-                        <td colspan="7">自　${startYear}年　${startMonth}月　${startDay}日　至　${endYear}年　${endMonth}月　${endDay}日　共　${days}　天</td>
+                        <td colspan="2" style="text-align:center;border-left:2px solid #000;">出 差 日 期</td>
+                        <td colspan="7">自 ${startYear} 年 ${startMonth} 月 ${startDay} 日 至 ${endYear} 年 ${endMonth} 月 ${endDay} 日 共 ${days} 天</td>
                     </tr>
                     <tr>
-                        <td colspan="2" style="text-align:center;border-left:2px solid #000;">出差事由</td>
+                        <td colspan="2" style="text-align:center;border-left:2px solid #000;">出 差 事 由</td>
                         <td colspan="7">${reason}</td>
                     </tr>
+
+                    <!-- 標題列 -->
                     <tr>
-                        <td colspan="2" rowspan="2" style="text-align:center;border-left:2px solid #000;">日期</td>
+                        <td colspan="2" rowspan="2" style="text-align:center;border-left:2px solid #000;">日　　期</td>
                         <td rowspan="2" style="text-align:center;">出發地</td>
                         <td rowspan="2" style="text-align:center;">目的地</td>
                         <td colspan="2" style="text-align:center;">交通費</td>
                         <td rowspan="2" style="text-align:center;">膳雜費</td>
-                        <td colspan="2" style="text-align:center;">其他</td>
+                        <td colspan="2" style="text-align:center;">其　他</td>
                     </tr>
                     <tr>
                         <td style="text-align:center;">公里數</td>
@@ -427,19 +508,27 @@
                         <td style="text-align:center;">品項</td>
                         <td style="text-align:center;">金額</td>
                     </tr>
+                    <!-- 日期下方的 月 / 日 -->
+                    <tr>
+                        <td style="text-align:center;border-left:2px solid #000;">月</td>
+                        <td style="text-align:center;">日</td>
+                        <td colspan="7"></td>
+                    </tr>
+
                     ${tripRows}
+
                     <tr style="border-top:2px solid #000;">
-                        <td colspan="4" style="text-align:right;padding-right:10px;">各品項小計</td>
+                        <td colspan="4" style="text-align:right;padding-right:10px;border-left:2px solid #000;">各品項小計</td>
                         <td colspan="2" style="text-align:right;padding-right:10px;">${transportTotal}</td>
                         <td style="text-align:right;padding-right:10px;">${mealTotal}</td>
                         <td colspan="2" style="text-align:right;padding-right:10px;">${otherTotal}</td>
                     </tr>
                     <tr style="border-top:2px solid #000;">
-                        <td colspan="4" style="text-align:right;padding-right:10px;">金額總合計</td>
+                        <td colspan="4" style="text-align:right;padding-right:10px;border-left:2px solid #000;">金額總合計</td>
                         <td colspan="5" style="text-align:right;padding-right:10px;">${grandTotal}</td>
                     </tr>
                     <tr>
-                        <td colspan="6"></td>
+                        <td colspan="6" style="border-left:2px solid #000;"></td>
                         <td colspan="3" style="text-align:right;padding-right:10px;">申請人：${name}</td>
                     </tr>
                 </table>
@@ -450,7 +539,8 @@
         }
 
         function generatePDF() {
-            previewPDF(); // 確保預覽是最新的
+            // 先產生預覽，確保內容是最新的
+            previewPDF();
 
             const name = (document.getElementById('name').value || '').trim() || '未命名';
             const startYear = parseInt(document.getElementById('startYear').value || 0);
@@ -468,33 +558,35 @@
 
             const element = document.getElementById('preview');
 
-            // 檢查 html2pdf 是否載入成功
             if (typeof html2pdf === 'undefined') {
                 alert('PDF 函式庫載入失敗，請重新整理頁面');
                 return;
             }
 
-            const opt = {
-                margin: [10, 10, 10, 10],
-                filename: fileName,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { 
-                    scale: 2,
-                    useCORS: true,
-                    letterRendering: true,
-                    allowTaint: true
-                },
-                jsPDF: { 
-                    unit: 'mm', 
-                    format: 'a4', 
-                    orientation: 'landscape' 
-                }
-            };
-
-            html2pdf().set(opt).from(element).save();
+            // 等瀏覽器把 preview 畫完再轉 PDF，避免 PDF 一片空白
+            setTimeout(() => {
+                const opt = {
+                    margin: [10, 10, 10, 10],
+                    filename: fileName,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: {
+                        scale: 2,
+                        useCORS: true,
+                        letterRendering: true,
+                        allowTaint: true,
+                        scrollY: 0
+                    },
+                    jsPDF: {
+                        unit: 'mm',
+                        format: 'a4',
+                        orientation: 'landscape'
+                    }
+                };
+                html2pdf().set(opt).from(element).save();
+            }, 300);
         }
 
-        // 初始化
+        // 預設給一筆明細
         addTripItem();
     </script>
 </body>
